@@ -16,13 +16,13 @@ def getNorm(n, x, L):
   return ret ** 0.5
 
 def check(process_output, case_output, case_input):
-  process_lines = utf8text(process_output).split('\n')
-  output_lines = utf8text(case_output).split('\n')
-  input_lines = utf8text(case_input).split('\n')
+  process_lines = list(filter(None, utf8text(process_output).split('\n')))
+  output_lines = list(filter(None, utf8text(case_output).split('\n')))
+  input_lines = list(filter(None, utf8text(case_input).split('\n')))
 
   n, _, m = map(int, input_lines[0].split())
 
-  barx = [float(x) for x in output_lines]
+  barx = [float(x) for x in output_lines[1:]]
   try:
     x = [float(z) for z in process_lines]
   except:
@@ -52,4 +52,8 @@ def check(process_output, case_output, case_input):
   return 0
 
 if __name__ == '__main__':
-  sys.exit(check(sys.argv[1], sys.argv[2], sys.argv[3]))
+  print(*sys.argv)
+  with open(sys.argv[1], 'rb') as process_file, \
+        open(sys.argv[2], 'rb') as output_file, \
+        open(sys.argv[3], 'rb') as input_file:
+    sys.exit(check(process_file.read(), output_file.read(), input_file.read()))
