@@ -12,7 +12,7 @@ def getNorm(n, x, L):
   ret = 0
   for i in range(n):
     for j in L[i]:
-      ret += L[i][j] * ((y[j] - y[i]) ** 2)
+      ret += L[i][j] * ((x[j] - x[i]) ** 2)
   return ret ** 0.5
 
 def check(process_output, case_output, case_input):
@@ -20,7 +20,7 @@ def check(process_output, case_output, case_input):
   output_lines = list(filter(None, utf8text(case_output).split('\n')))
   input_lines = list(filter(None, utf8text(case_input).split('\n')))
 
-  n, _, m = map(int, input_lines[0].split())
+  n, m = map(int, input_lines[0].split())
 
   barx = [float(x) for x in output_lines[1:]]
   try:
@@ -32,13 +32,13 @@ def check(process_output, case_output, case_input):
   if len(x) != n:
     print(f'expected {n} entries, got {len(x)} instead')
     return 1
-  if any(math.isnan, x):
+  if any(map(math.isnan, x)):
     print('Nan detected')
     return 1
 
   # compute L
   L = [{} for _ in range(n)]
-  for edge in input_lines[1:]:
+  for edge in input_lines[1:m+1]:
     u, v, w = edge.split()
     u = int(u) - 1
     v = int(v) - 1
@@ -46,13 +46,12 @@ def check(process_output, case_output, case_input):
     L[u][v] = L[v][u] = w
 
   xDiff = [x[i] - barx[i] for i in range(n)]
-  xDiffNorm = getNorm(n, barx, L)
+  xDiffNorm = getNorm(n, xDiff, L)
   xNorm = getNorm(n, barx, L)
   print(f'xNorm = {xNorm:.3g}, diff = {xDiffNorm:.3g}, ratio = {xDiffNorm/xNorm:.10g}')
   return 0
 
 if __name__ == '__main__':
-  print(*sys.argv)
   with open(sys.argv[1], 'rb') as process_file, \
         open(sys.argv[2], 'rb') as output_file, \
         open(sys.argv[3], 'rb') as input_file:
